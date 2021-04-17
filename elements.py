@@ -3,6 +3,8 @@ from random import randint
 
 from gamelib import Sprite, GameApp, Text
 
+from PIL import Image, ImageTk
+
 from consts import *
 
 from utils import direction_to_dxdy, distance
@@ -31,12 +33,12 @@ class Bullet(FixedDirectionSprite):
 
 class Enemy(FixedDirectionSprite):
     def __init__(self, app, x, y, vx, vy):
-        super().__init__(app, 'images/enemy1.png', x, y, vx, vy)
+        super().__init__(app, '../images/enemy1.png', x, y, vx, vy)
 
 
 class Ship(Sprite):
     def __init__(self, app, x, y):
-        super().__init__(app, 'images/ship.png', x, y)
+        super().__init__(app, '../images/ship.png', x, y)
 
         self.app = app
 
