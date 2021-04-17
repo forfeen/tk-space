@@ -51,17 +51,14 @@ class SpaceGame(GameApp):
 
         self.level = 1
         self.level_text = Text(self, '', 100, 580)
-        self.update_level_text()
+        self.level = StatusWithText(self, 100, 580, 'Level: %d', 1)
 
-        self.score = 0
         self.score_wait = 0
-        self.score_text = Text(self, '', 100, 20)
-        self.update_score_text()
+        self.score = StatusWithText(self, 100, 20, 'Score: %d', 0)
 
         self.bomb_power = BOMB_FULL_POWER
         self.bomb_wait = 0
-        self.bomb_power_text = Text(self, '', 700, 20)
-        self.update_bomb_power_text()
+        self.bomb_power = StatusWithText(self, 700, 20, 'Power: %d', self.bomb_power)
 
         self.elements.append(self.ship)
 
@@ -103,28 +100,17 @@ class SpaceGame(GameApp):
 
             self.update_bomb_power_text()
 
-    def update_score_text(self):
-        self.score_text.set_text('Score: %d' % self.score)
-
-    def update_bomb_power_text(self):
-        self.bomb_power_text.set_text('Power: %d%%' % self.bomb_power)
-
-    def update_level_text(self):
-        self.level_text.set_text('Level: %d' % self.level)
-
     def update_score(self):
         self.score_wait += 1
         if self.score_wait >= SCORE_WAIT:
-            self.score += 1
+            self.score.value += 1
             self.score_wait = 0
-            self.update_score_text()
 
     def update_bomb_power(self):
         self.bomb_wait += 1
         if (self.bomb_wait >= BOMB_WAIT) and (self.bomb_power != BOMB_FULL_POWER):
-            self.bomb_power += 1
+            self.bomb_power.value += 1
             self.bomb_wait = 0
-            self.update_bomb_power_text()
 
     def create_enemies(self):
         p = random()
@@ -216,6 +202,27 @@ class ShipMovementKeyReleasedHandler(GameKeyboardHandler):
             self.ship.stop_turn('LEFT')
         elif event.keysym == 'Right':
             self.ship.stop_turn('RIGHT')
+
+class StatusWithText:
+    def __init__(self, app, x, y, text_template, default_value=0):
+        self.x = x
+        self.y = y
+        self.text_template = text_template
+        self._value = default_value
+        self.label_text = Text(app, '', x, y)
+        self.update_label()
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, v):
+        self._value = v
+        self.update_label()
+    
+    def update_label(self):
+        self.label_text.set_text(self.text_template % self.value)
 
 if __name__ == "__main__":
     root = tk.Tk()
