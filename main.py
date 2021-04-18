@@ -81,24 +81,32 @@ class SpaceGame(GameApp):
     def bullet_count(self):
         return len(self.bullets)
 
-    def bomb(self):
-        if self.bomb_power == BOMB_FULL_POWER:
-            self.bomb_power = 0
-
-            self.bomb_canvas_id = self.canvas.create_oval(
+    def create_oval(self):
+        self.bomb_canvas_id = self.canvas.create_oval(
                 self.ship.x - BOMB_RADIUS, 
                 self.ship.y - BOMB_RADIUS,
                 self.ship.x + BOMB_RADIUS, 
                 self.ship.y + BOMB_RADIUS
             )
 
-            self.after(200, lambda: self.canvas.delete(self.bomb_canvas_id))
+    # Hide access to self.after
+    def hide_after(self):
+        self.after(200, lambda: self.canvas.delete(self.bomb_canvas_id))
 
-            for e in self.enemies:
+    def enemy_destroy(self):
+        for e in self.enemies:
                 if self.ship.distance_to(e) <= BOMB_RADIUS:
                     e.to_be_deleted = True
 
-            self.update_bomb_power_text()
+
+    def bomb(self):
+        if self.bomb_power == BOMB_FULL_POWER:
+            self.bomb_power = 0
+            self.create_oval()
+            self.hide_after()
+            self.enemy_destroy()
+
+
 
     def update_score(self):
         self.score_wait += 1
